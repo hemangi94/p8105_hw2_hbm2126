@@ -127,8 +127,23 @@ pols_df =
     month = as.integer(month),
     day = as.integer(day), 
     month = month.abb[month], 
-    president = case_when(prez_gop == 1 ~ "gop", prez_dem == 1 ~ "dem"))
+    president = case_when(prez_gop == 1 ~ "gop", prez_dem == 1 ~ "dem")) %>% 
+  subset(select = -c(day, prez_gop, prez_dem ))
+```
 
+```{r}
+snp_df = 
+  read_csv("data/fivethirtyeight_datasets/snp.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("month", "day", "year"), sep = "/")%>%
+  arrange(year, month) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    month = month.abb[month],
+    year = if_else(year<23, 2000+year, 1900+year)) %>%  
+  subset(select = -day) 
+  
   
 ```
 
