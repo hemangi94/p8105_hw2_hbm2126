@@ -17,3 +17,8 @@ subway_df = read.csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
 subway_df = janitor::clean_names(subway_df)
 ```
 
+```{r, eval=FALSE}
+View(subway_df)
+```
+
+
