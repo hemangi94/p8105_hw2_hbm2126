@@ -12,13 +12,59 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-```{r importing and cleaning data}
-subway_df = read.csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
-subway_df = janitor::clean_names(subway_df)
+```{r importing, cleaning, and manipulating data}
+subway_df = 
+  read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c"), show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  select(line:entry, vending, ada) %>%
+  mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
+```
+
+```{r}
+subway_df %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+```{r}
+subway_df %>% 
+  filter(ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+```{r}
+subway_df %>% 
+  filter(vending == "NO") %>% 
+  pull(entry) %>% 
+  mean
+```
+
+
+```{r}
+subway_df %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") %>% 
+  filter(route == "A") %>% 
+  select(station_name, line) %>% 
+  distinct
+
+subway_df %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
 ```
 
 ```{r, eval=FALSE}
 View(subway_df)
 ```
+
+Problem 2
 
 
