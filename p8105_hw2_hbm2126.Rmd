@@ -10,7 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidyverse)
+library(readxl)
 ```
+
+
+Problem 1
 
 ```{r importing, cleaning, and manipulating data}
 subway_df = 
@@ -66,5 +70,67 @@ View(subway_df)
 ```
 
 Problem 2
+
+```{r}
+mr_trash_wheel_df= 
+  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", skip = 1) %>% 
+  janitor::clean_names() %>%
+  select(dumpster:homes_powered) %>%
+  drop_na(dumpster) %>% 
+  mutate(what_sheet = "Mr Trash Wheel") %>% 
+  mutate(sports_balls = as.integer(round(sports_balls,0)))
+  
+
+
+```
+```{r}
+prof_trash_wheel_df= 
+  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", skip = 1) %>% 
+  janitor::clean_names() %>%
+  mutate(what_sheet = "Prof Trash Wheel") %>% 
+  drop_na(dumpster)
+  
+```
+
+```{r}
+prof_trash_wheel_df$year = as.character(prof_trash_wheel_df$year)
+```
+
+```{r}
+combined_trash_df = bind_rows(mr_trash_wheel_df, prof_trash_wheel_df)
+```
+
+```{r}
+combined_trash_df %>% 
+  filter(what_sheet == "Prof Trash Wheel") %>% 
+  summarise(total_weight = sum(weight_tons))
+  
+```
+
+```{r}
+combined_trash_df %>% 
+  filter(what_sheet == "Mr Trash Wheel" & year == 2020) %>% 
+  summarise(total_sports_balls = sum(sports_balls))
+```
+
+
+Problem 3
+
+
+```{r}
+pols_df = 
+  read_csv("data/fivethirtyeight_datasets/pols-month.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  separate(mon, into = c("year", "month", "day"), sep = "-")%>%
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day), 
+    month = month.abb[month], 
+    president = case_when(prez_gop == 1 ~ "gop", prez_dem == 1 ~ "dem"))
+
+  
+```
+
 
 
