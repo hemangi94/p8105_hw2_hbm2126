@@ -136,16 +136,39 @@ snp_df =
   read_csv("data/fivethirtyeight_datasets/snp.csv", show_col_types = FALSE) %>%
   janitor::clean_names() %>%
   separate(date, into = c("month", "day", "year"), sep = "/")%>%
-  arrange(year, month) %>% 
   mutate(
     year = as.integer(year),
     month = as.integer(month),
     month = month.abb[month],
-    year = if_else(year<23, 2000+year, 1900+year)) %>%  
-  subset(select = -day) 
-  
+    year = as.integer(if_else(year<23, 2000+year, 1900+year))) %>%  
+  subset(select = -day)%>% 
+  arrange(year, month) %>% 
+  subset(select = c(2,1,3))
   
 ```
 
+```{r}
+unemployment_df = 
+  read_csv("data/fivethirtyeight_datasets/unemployment.csv", show_col_types = FALSE) %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    jan:dec,
+    names_to = "month",
+    values_to = "unemployment_rate"
+  ) %>% 
+  mutate(
+    year = as.integer(year),
+    month = recode(month, "jan" = "Jan", "feb" = "Feb", "mar" = "Mar", "apr" = "Apr", "may"= "May", "jun" = "Jun", "jul" = "Jul", "aug" = "Aug" , "sep" = "Sep", "oct"="Oct", "nov" = "Nov", "dec" = "Dec")
+    
+  ) %>% 
+  arrange(year, month)
+```
+
+```{r}
+pols_snp_combined_df = left_join(pols_df, snp_df)
+pols_snp_unemploy_combined_df = left_join(pols_snp_combined_df, unemployment_df)
+
+
+```
 
 
