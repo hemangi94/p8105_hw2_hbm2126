@@ -1,20 +1,21 @@
 ---
-title: "p8105_hw2_hbm2126"
+title: "Data Science Homework 2"
 output: github_document
 date: "2022-10-04"
 ---
+Hemangi Modi (UNI: hbm2126)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r loading libraries, include=FALSE}
 library(tidyverse)
 library(readxl)
 ```
 
 
-Problem 1
+# Problem 1 
 
 ```{r importing, cleaning, and manipulating data}
 subway_df = 
@@ -24,18 +25,27 @@ subway_df =
   mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
 ```
 
-```{r}
+### Describing the dataset and cleaning process
+The subway_df dataset contains various variables that pertain to the NYC transit information. Some of the variables include the subway line, the station name, the different routes that the line serves, the type of entrance to the subway station (stair, elevator, etc), whether there is entrance allowed through vending or not, and if the station is ADA compliant, among others. So far, the data cleaning steps entailed cleaning the variable name, selecting a few key columns to analyze the data and converted the entry variable from a character to a logical variable. There are `r nrow(subway_df)` rows and `r ncol(subway_df)` columns. The data is not entirely tidy because it is not compact in terms of route and route names. 
+
+### Answering questions using subway dataset
+
+```{r question 1}
 subway_df %>% 
   select(station_name, line) %>% 
   distinct
 ```
 
-```{r}
+There are 465 distinct stations. 
+
+```{r question 2}
 subway_df %>% 
   filter(ada == TRUE) %>% 
   select(station_name, line) %>% 
   distinct
 ```
+
+84 stations are ADA compliant. 
 
 ```{r}
 subway_df %>% 
@@ -44,8 +54,9 @@ subway_df %>%
   mean
 ```
 
+About 37.7% of station entrances/exits without vending allow entrance. 
 
-```{r}
+```{r reformating data}
 subway_df %>% 
   pivot_longer(
     route1:route11,
@@ -65,11 +76,13 @@ subway_df %>%
   distinct
 ```
 
+60 distinct stations serve the A train. Of these 60 stations, 17 are ADA compliant. 
+
 ```{r, eval=FALSE}
 View(subway_df)
 ```
 
-Problem 2
+# Problem 2 
 
 ```{r}
 mr_trash_wheel_df= 
@@ -113,8 +126,12 @@ combined_trash_df %>%
   summarise(total_sports_balls = sum(sports_balls))
 ```
 
+### Overall description and answers to specific questions
 
-Problem 3
+This dataset has information about trash that was collected at different locations and sites by Mr. Trash Wheel and Professor Trash Wheel. The dataset has `r ncol(combined_trash_df)` columns and `r nrow(combined_trash_df)` rows. This combined dataset contains information on the weight of trash collected on a certain day and also contains details about the type of trash - plastic bottles, cigarette butts, glass bottles, etc. The total weight of trash collected by Professor Trash Wheel was 190.12 tons. Mr. Trash Wheel collected a total of 856 sports balls in 2020. 
+
+
+# Problem 3
 
 
 ```{r}
@@ -171,4 +188,14 @@ pols_snp_unemploy_combined_df = left_join(pols_snp_combined_df, unemployment_df)
 
 ```
 
+### Describing the 3 datasets and the combined datasets
+
+The pols-month dataset contains information about politicians and whether they are republican or democratic at a given time. The resulting dataset after cleaning separates the date into separate day, month, and year columns. Additionally, a new variable 'president' was created to indicate if the president at that certain time period was a democrat or a republican. Some columns that were redundant 
+were dropped from the dataset. There are `r ncol(pols_df)` variables and `r nrow(pols_df)` observations in this dataset. The years in this dataset range from `r pols_df$year[1]` to `r pols_df$year[822]`
+
+The snp dataset contains information on closing prices for the S&P index at a given point in time. The cleaned dataset is also broken out into day, month, and year. This dataset has `r ncol(snp_df)` variables and `r nrow(snp_df)` observations. The  years in this dataset range from `r snp_df$year[1]` to `r snp_df$year[787]`
+
+Lastly, the unemployment dataset initially contained a year column and a column for each month of the year. The observations were the unemployment rate for that particular month/year combination. After cleaning the dataset, the data was made longer and the separate month columns were collapsed into one 'month' column. The resulting dataset contains year, month, and the unemployment rate. This dataset has `r ncol(unemployment_df)` variables and `r nrow(unemployment_df)` observations. The years in this dataset range from `r unemployment_df$year[1]` to `r unemployment_df$year[816]`.
+
+The merging of the 3 datasets essentially gives information about how the economy fared based on who was president and which party ruled the house and senate. The resulting merged dataset has `r ncol(pols_snp_unemploy_combined_df)` variables and `r nrow(pols_snp_unemploy_combined_df)` observations. The years in this combined dataset range from `r pols_snp_unemploy_combined_df$year[1]` to `r pols_snp_unemploy_combined_df$year[822]`. The key variables in this dataset are year/month, whether the president at the time was a republican or a democrat, the snp closing value and the unemployment rate during that month and year. 
 
